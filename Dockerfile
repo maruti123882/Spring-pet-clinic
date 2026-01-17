@@ -1,16 +1,17 @@
-# Select base image
-FROM maven:3.8.5-openjdk-17
-# Create folder /app
+# ---------- BUILD STAGE ----------
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-# Copy src folder to /app/src
-COPY ./src /app/src
-# Copy pom.xml to container
-COPY ./pom.xml /app/pom.xml
-# RUN maven command to create package
-RUN mvn clean package
-# Rename jar file
-RUN mv /app/target/*jar /app/spring.jar
-# RUN jar file
-CMD java -jar /app/spring.jar
-# to expose port number
+
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
+# ---------- RUNTIME STAGE ----------
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=build /app/target/*.war app.war
+
 EXPOSE 8080
+CMD ["java", "-jar", "app.war"]
