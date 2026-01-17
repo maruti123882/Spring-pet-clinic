@@ -1,5 +1,5 @@
 variable "aws_region" {
-  default = "ap-northeast-1"
+  default = "ap-south-2"
 }
 
 variable "cluster_name" {
